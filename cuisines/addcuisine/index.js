@@ -3,6 +3,7 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = (event, context, callback) => {
 
+    const currentDate =  new Date();
 
     var params = {
         TableName: 'kt-cuisines',
@@ -13,8 +14,8 @@ exports.handler = (event, context, callback) => {
                 "foodItems": event.info.foodItems,
                 "description": event.info.description,
             },
-            "createdAt": new Date(),
-            "updatedAt": new Date()
+            "createdAt": ''+currentDate,
+            "updatedAt": ''+currentDate
         }
     };
 
