@@ -14,7 +14,7 @@ exports.handler = (event, context, callback) => {
                 "description": event.info.description,
             },
             "createdAt": new Date(),
-            "updatedAt": ''
+            "updatedAt": new Date()
         }
     };
 
