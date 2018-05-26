@@ -1,19 +1,15 @@
-const AWS = require('aws-sdk');
-var docClient = new AWS.DynamoDB.DocumentClient();
+const AWS = require("aws-sdk");
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = (event, context, callback) => {
+exports.handler = async event => {
+  const params = {
+    TableName: "kt-cuisines"
+  };
 
-
-    const params = {
-        TableName: 'kt-cuisines'
-    };
-
-    docClient.scan(params, (err, result)=> {
-        if(err){
-            callback(err);
-        } else {
-            callback(null, result);
-        }
-    });
-
-}
+  try {
+    const allCuisines = await docClient.scan(params).promise();
+    console.log(allCuisines.Items);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
