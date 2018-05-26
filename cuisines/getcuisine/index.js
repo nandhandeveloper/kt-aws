@@ -1,22 +1,26 @@
-const AWS = require('aws-sdk');
-var docClient = new AWS.DynamoDB.DocumentClient();
+const AWS = require("aws-sdk");
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = (event, context, callback) => {
+exports.handler = async event => {
+  const params = {
+    TableName: "kt-cuisines",
+    Key: {
+      name: event.cuisineName
+    }
+  };
 
-
-    var params = {
-        TableName: 'kt-cuisines',
-        Key:{
-            "name": event.cuisineName
-        }
-    };
-
-    docClient.get(params, (err, result)=> {
-        if(err){
-            callback(err);
-        } else {
-            callback(null, result);
-        }
-    });
-
-}
+  try {
+    const cuisineDetails = await docClient.get(params).promise();
+    if (Object.keys(cuisineDetails).length === 0) {
+      const error = {
+        code: "NotFound",
+        message: "No cuisine Found wityh the name " + event.cuisineName
+      };
+      throw new Error(JSON.stringify(error));
+    } else {
+      return cuisineDetails.Item;
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+};
