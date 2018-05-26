@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
-var docClient = new AWS.DynamoDB.DocumentClient();
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = (event, context, callback) => {
+exports.handler = async event => {
   const foodparams = {
     TableName: "kt-foods",
     Key: {
@@ -9,37 +9,34 @@ exports.handler = (event, context, callback) => {
       foodname: event.foodName
     }
   };
+  try {
+    const foodDetails = await docClient.get(foodparams).promise();
 
-  docClient.get(foodparams, (err, foodItem) => {
-    if (err) {
-      callback(err);
+    if (Object.keys(foodDetails).length === 0) {
+      const error = {
+        code: "NotFound",
+        message:
+          "No Food found with the name " +
+          event.foodName +
+          " in cuisine " +
+          event.cuisineName
+      };
+      throw new Error(JSON.stringify(error));
     } else {
-      if (Object.keys(foodItem).length === 0) {
-        const error = {
-          code: "NotFound",
+      const deletedFood = await docClient.delete(foodparams).promise();
+      if (deletedFood) {
+        const successMessage = {
           message:
-            "No Food found with the name " +
+            "Deleted a Food " +
             event.foodName +
-            " in cuisine " +
-            event.cuisineName
+            " of cuisine " +
+            event.cuisineName +
+            " successfully"
         };
-        return context.fail(JSON.stringify(error));
-      } else {
-        const params = {
-          TableName: "kt-foods",
-          Key: {
-            cuisinename: event.cuisineName,
-            foodname: event.foodName
-          }
-        };
-        docClient.delete(params, (err, result) => {
-          if (err) {
-            return callback(err);
-          } else {
-            return callback(null, result);
-          }
-        });
+        return successMessage;
       }
     }
-  });
+  } catch (error) {
+    throw new Error(error);
+  }
 };
