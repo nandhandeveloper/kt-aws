@@ -8,7 +8,7 @@ exports.handler = async event => {
 
   try {
     const allCuisines = await docClient.scan(params).promise();
-    console.log(allCuisines.Items);
+    return allCuisines.Items;
   } catch (error) {
     throw new Error(error);
   }

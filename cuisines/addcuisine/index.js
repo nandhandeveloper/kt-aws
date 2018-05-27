@@ -44,3 +44,16 @@ exports.handler = async event => {
     throw new Error(error);
   }
 };
+
+
+// Use the below Schema to post the Cuisine Details:
+// {
+//   "info": {
+//       "image": "../../assets/regional-poster.jpg",
+//       "description": "some cuisine description",
+//       "foodItems": 8
+//   },
+  
+//   "cuisineName": "Test2"
+  
+// }
