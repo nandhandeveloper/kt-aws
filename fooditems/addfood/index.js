@@ -75,3 +75,26 @@ exports.handler = async event => {
     throw new Error(error);
   }
 };
+
+
+
+
+// use this json schema while posting data
+
+// {
+//   "info": {
+//       "rating": 3,
+//       "description": " Flavoured curry with banana chips as a side",
+//       "ingredients": [
+//           "rice",
+//           "curd",
+//           "sweet"
+//       ],
+//       "servingTime": "dinner",
+//       "calories": 350,
+//       "price": 555
+//   },
+//   "cuisineName": "Biryani",
+//   "foodName": "box1"
+  
+// }

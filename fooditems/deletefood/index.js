@@ -2,11 +2,14 @@ const AWS = require("aws-sdk");
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async event => {
+  const cuisineName = event.params.path.cuisinename;
+  const foodName = event.params.path.foodname;
+
   const foodparams = {
     TableName: "kt-foods",
     Key: {
-      cuisinename: event.cuisineName,
-      foodname: event.foodName
+      cuisinename: cuisineName,
+      foodname: foodName
     }
   };
   try {
@@ -17,9 +20,9 @@ exports.handler = async event => {
         code: "NotFound",
         message:
           "No Food found with the name " +
-          event.foodName +
+          foodName +
           " in cuisine " +
-          event.cuisineName
+          cuisineName
       };
       throw new Error(JSON.stringify(error));
     } else {
@@ -28,9 +31,9 @@ exports.handler = async event => {
         const successMessage = {
           message:
             "Deleted a Food " +
-            event.foodName +
+            foodName +
             " of cuisine " +
-            event.cuisineName +
+            cuisineName +
             " successfully"
         };
         return successMessage;

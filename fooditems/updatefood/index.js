@@ -3,34 +3,37 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async event => {
   const currentDate = new Date();
+  const cuisineName =  event.params.path.cuisinename;
+  const foodName =  event.params.path.foodname;
+  const requestFoodDetails = event['body-json'];
 
   const cusinesparams = {
     TableName: "kt-cuisines",
     Key: {
-      name: event.cuisineName
+      name: cuisineName
     }
   };
 
   const foodparams = {
     TableName: "kt-foods",
     Key: {
-      cuisinename: event.cuisineName,
-      foodname: event.foodName
+      cuisinename: cuisineName,
+      foodname: foodName
     }
   };
 
   const updateFoodParams = {
     TableName: "kt-foods",
     Item: {
-      cuisinename: event.cuisineName,
-      foodname: event.foodName,
+      cuisinename: cuisineName,
+      foodname: foodName,
       info: {
-        price: event.info.price,
-        description: event.info.description,
-        ingredients: event.info.ingredients,
-        calories: event.info.calories,
-        rating: event.info.rating,
-        servingTime: event.info.servingTime
+        price: requestFoodDetails.info.price,
+        description: requestFoodDetails.info.description,
+        ingredients: requestFoodDetails.info.ingredients,
+        calories: requestFoodDetails.info.calories,
+        rating: requestFoodDetails.info.rating,
+        servingTime: requestFoodDetails.info.servingTime
       },
       createdAt: "",
       updatedAt: "" + currentDate
@@ -42,7 +45,7 @@ exports.handler = async event => {
     if (Object.keys(cuisineDetails).length === 0) {
       const error = {
         code: "NotFound",
-        message: "No Cuisine Exists with the Given Name " + event.cuisineName
+        message: "No Cuisine Exists with the Given Name " + cuisineName
       };
       throw new Error(JSON.stringify(error));
     } else {
@@ -52,9 +55,9 @@ exports.handler = async event => {
           code: "NotFound",
           message:
             "No Food found with the name " +
-            event.foodName +
+            foodName +
             " in cuisine " +
-            event.cuisineName
+            cuisineName
         };
         throw new Error(JSON.stringify(error));
       } else {
@@ -63,7 +66,7 @@ exports.handler = async event => {
         if (updatedFood) {
           const successMessage = {
             message:
-              "SuccessFully updated the food Details of " + event.foodName
+              "SuccessFully updated the food Details of " + foodName
           };
           return successMessage;
         }
@@ -73,3 +76,22 @@ exports.handler = async event => {
     throw new Error(error);
   }
 };
+
+
+// Use below json schema while updating the food Item
+
+// {
+//   "info": {
+//       "rating": 3,
+//       "description": " Flavoured curry with banana chips as a side",
+//       "ingredients": [
+//           "rice",
+//           "curd",
+//           "sweet"
+//       ],
+//       "servingTime": "dinner",
+//       "calories": 450,
+//       "price": 555
+//   }
+  
+// }

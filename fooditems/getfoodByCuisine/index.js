@@ -2,10 +2,13 @@ const AWS = require("aws-sdk");
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async event => {
+  
+  const cuisineName =  event.params.path.cuisinename;
+  
   const cuisineParams = {
     TableName: "kt-cuisines",
     Key: {
-      name: event.cuisineName
+      name: cuisineName
     }
   };
 
@@ -16,7 +19,7 @@ exports.handler = async event => {
       "#cn": "cuisinename"
     },
     ExpressionAttributeValues: {
-      ":cusineName": event.cuisineName
+      ":cusineName": cuisineName
     }
   };
 
@@ -25,7 +28,7 @@ exports.handler = async event => {
     if (Object.keys(cuisineDetails).length === 0) {
       const error = {
         code: "NotFound",
-        message: "No cuisine Found wityh the name " + event.cuisineName
+        message: "No cuisine Found wityh the name " + cuisineName
       };
       throw new Error(JSON.stringify(error));
     } else {
